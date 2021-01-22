@@ -1,0 +1,9 @@
+26a70d51e54b7ae51773cce70033eae5 *DESCRIPTION
+f92dc9caef12e88e4041333e3bdea904 *NAMESPACE
+eb4baec0c1d0a0d249672e2c78c88f02 *R/helpers.R
+104e6d14ab4a7a8c42cfc5979c65fe55 *R/p.GFisher.R
+025f46b15220ad4e075a8b34a5ca0ce7 *R/p.oGFisher.R
+cbd88331fe288e48380c2bbca618b132 *R/stat.GFisher.R
+39b0e63a7c8c1860b65f9a0aa567e6eb *man/p.GFisher.Rd
+9254e56d2f1aaa7066169233d1bc3151 *man/p.oGFisher.Rd
+8c8d4b781ff03e8d12301fe97557281a *man/stat.GFisher.Rd
