@@ -5,7 +5,7 @@
 \title{P-value of the omnibus generalized Fisher's p-value combination test.}
 \usage{
 p.oGFisher(p, DF, W, M, p.type = "two", method = "HYB",
-  combine = "cct", nsim = NULL, seed = NULL)
+  combine = "cct", nsim = NULL)
 }
 \arguments{
 \item{p}{- vector of input p-values.}
@@ -23,8 +23,6 @@ p.oGFisher(p, DF, W, M, p.type = "two", method = "HYB",
 \item{combine}{- "cct" = oGFisher using the Cauchy combination method, "mvn" = oGFisher using multivariate normal distribution.}
 
 \item{nsim}{- number of simulation used in the "MR" method, default = 5e4.}
-
-\item{seed}{- random seed used in the "MR" method}
 }
 \value{
 1. p-value of the oGFisher test. 2. individual p-value of each GFisher test.

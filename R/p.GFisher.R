@@ -6,7 +6,6 @@
 #' @param p.type - "two" = two-sided p-values, "one" = one-sided p-values.
 #' @param method - "MR" = simulation-assisted moment ratio matching, "HYB" = moment ratio matching by quadratic approximation, "GB" = Brown's method with calculated variance. See details in the reference.
 #' @param nsim - number of simulation used in the "MR" method, default = 5e4.
-#' @param seed - random seed used in the "MR" method
 #' @return p-value of the observed GFisher statistic.
 #' @references Hong Zhang and Zheyang Wu. "Accurate p-Value Calculation for Generalized Fisher's Combination Tests Under Dependence", <arXiv:2003.01286>.
 #' @examples
@@ -24,23 +23,21 @@
 #' @export
 #' @import stats
 #' @importFrom Matrix nearPD
+#' @importFrom methods is
 #'
-p.GFisher = function(q, df, w, M, p.type="two", method="HYB", nsim=NULL, seed=NULL){
+p.GFisher = function(q, df, w, M, p.type="two", method="HYB", nsim=NULL){
   n = dim(M)[1]
   if(length(df)==1){df = rep(df, n)}
   if(length(w)==1){w = rep(w, n)}
   w = n*w/sum(w)
   if(method=="MR"){
     M_chol = try(chol(M))
-    if(class(M_chol)=="try-error"){
+    if(is(M_chol, "try-error")){
       M = as.matrix(nearPD(M, corr=TRUE)$mat)
       M_chol = chol(M)
     }
-    if(class(nsim)!="numeric"){
+    if(!is(nsim, "numeric")){
       nsim = 5e4
-    }
-    if(class(seed)=="numeric"){
-      set.seed(seed)
     }
     znull = matrix(rnorm(n*nsim), ncol=n, nrow=nsim)%*%M_chol
     if(p.type=="two"){

@@ -12,6 +12,7 @@
 #' stat.GFisher(pval, df=1:n, w=1:n)
 #' @export
 #' @import stats
+#' @importFrom methods is
 
 stat.GFisher = function(p, df=2, w=1){
   if(length(w)>1){
@@ -22,8 +23,12 @@ stat.GFisher = function(p, df=2, w=1){
   if(all(df==2)){
     pp_trans = -2*log(p)
   }else{
-    pp_trans = qchisq(1-p, df=df)
+    pp_trans = qchisq(p, df=df, lower.tail=F)
+    if(anyNA(pp_trans)){
+      na_id = which(is.na(pp_trans))
+      pp_trans[na_id] = qchisq(1-p[na_id], df=df[na_id])}
   }
-  fisherstat = sum(w*pp_trans) # apply(pp_trans%*%W, 1, sum)
+  fisherstat = sum(w*pp_trans)
   return(fisherstat)
 }
+

@@ -4,8 +4,7 @@
 \alias{p.GFisher}
 \title{Survival function of the generalized Fisher's p-value combination statistic.}
 \usage{
-p.GFisher(q, df, w, M, p.type = "two", method = "HYB", nsim = NULL,
-  seed = NULL)
+p.GFisher(q, df, w, M, p.type = "two", method = "HYB", nsim = NULL)
 }
 \arguments{
 \item{q}{- observed GFisher statistic.}
@@ -21,8 +20,6 @@ p.GFisher(q, df, w, M, p.type = "two", method = "HYB", nsim = NULL,
 \item{method}{- "MR" = simulation-assisted moment ratio matching, "HYB" = moment ratio matching by quadratic approximation, "GB" = Brown's method with calculated variance. See details in the reference.}
 
 \item{nsim}{- number of simulation used in the "MR" method, default = 5e4.}
-
-\item{seed}{- random seed used in the "MR" method}
 }
 \value{
 p-value of the observed GFisher statistic.

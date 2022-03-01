@@ -7,7 +7,6 @@
 #' @param method - "MR" = simulation-assisted moment ratio matching, "HYB" = moment ratio matching by quadratic approximation, "GB" = Brown's method with calculated variance. See details in the reference.
 #' @param combine - "cct" = oGFisher using the Cauchy combination method, "mvn" = oGFisher using multivariate normal distribution.
 #' @param nsim - number of simulation used in the "MR" method, default = 5e4.
-#' @param seed - random seed used in the "MR" method
 #' @return 1. p-value of the oGFisher test. 2. individual p-value of each GFisher test.
 #' @references Hong Zhang and Zheyang Wu. "Accurate p-Value Calculation for Generalized Fisher's Combination Tests Under Dependence", <arXiv:2003.01286>.
 #' @examples
@@ -21,16 +20,17 @@
 #' p.oGFisher(pval, DF, W, M, p.type="two", method="HYB", combine="cct")
 #' @export
 #' @importFrom mvtnorm pmvnorm
+#' @importFrom methods is
 
-p.oGFisher = function(p, DF, W, M, p.type="two", method="HYB", combine="cct", nsim=NULL, seed=NULL){
-  out = stat.oGFisher(p, DF, W, M, p.type="two", method="HYB", nsim=NULL, seed=NULL)
+p.oGFisher = function(p, DF, W, M, p.type="two", method="HYB", combine="cct", nsim=NULL){
+  out = stat.oGFisher(p, DF, W, M, p.type="two", method="HYB", nsim=NULL)
   if(combine=="cct"){
     thr = out$cct
-    pval = 0.5 - atan(thr)/pi
+    pval = pcauchy(thr,lower.tail = F)
   }else{
     thr = out$minp
     nd = dim(DF)[1]
-    COR_GFisher = getGFisherCOR(DD=DF, M=M, p.type=p.type)
+    COR_GFisher = getGFisherCOR(DD=DF, W=W, M=M, p.type=p.type)
     pval = 1 - pmvnorm(lower=rep(-Inf,nd), upper=qnorm(1-thr), mean=rep(0,nd), corr=COR_GFisher)[1]
   }
   return(list(pval=pval, pval_indi=out$PVAL))

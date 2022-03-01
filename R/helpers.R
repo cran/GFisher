@@ -26,7 +26,7 @@ getGFishercoef = function(D, M, p.type="two"){
     return(list(coeff1=coeff1,coeff2=coeff2,coeff3=coeff3,coeff4=coeff4))
   }
 }
-getGFishercov = function(D1, D2, M, p.type="two", var.correct = TRUE){
+getGFishercov = function(D1, D2,W1,W2, M, p.type="two", var.correct = TRUE){
   n = dim(M)[1]
   res1.coeff = getGFishercoef(D1, M, p.type=p.type)
   res2.coeff = getGFishercoef(D2, M, p.type=p.type)
@@ -65,18 +65,18 @@ getGFishercov = function(D1, D2, M, p.type="two", var.correct = TRUE){
       GM_cross = diag(sqrt(2*D1/v1),n,n)%*%GM_cross%*%diag(sqrt(2*D2/v2),n,n)
     }
   }
-  return(sum(GM_cross))
+  return(sum(GM_cross*(W1%*%t(W2))))
 }
-getGFisherCOR = function(DD, M, var.correct=TRUE, p.type="two"){ # DD is a matrix, row represents a GFisher df
+getGFisherCOR = function(DD, W, M, var.correct=TRUE, p.type="two"){ # DD is a matrix, row represents a GFisher df
   m = dim(DD)[1] # m is the numer of GFisher
   COV = matrix(NA, ncol=m, nrow=m)
   for(i in 1:m){
     for(j in i:m){
-      COV[i,j] = getGFishercov(DD[i,], DD[j,], M, var.correct=var.correct,
+      COV[i,j] = getGFishercov(DD[i,], DD[j,],W[i,],W[j,], M, var.correct=var.correct,
                                p.type=p.type)
     }
   }
-  COV[lower.tri(COV)] = COV[upper.tri(COV)]
+  COV[lower.tri(COV)] = t(COV)[lower.tri(COV)]
   return(cov2cor(COV))
 }
 getGFisherGM = function(D, w, M, p.type="two"){
@@ -132,10 +132,16 @@ getGFisherlam = function(D, w, M, GM, p.type="two"){
   return(list(lam=lam))
 }
 
-stat.oGFisher = function(p, DF, W, M, p.type="two", method="HYB", nsim=NULL, seed=NULL){
+stat.oGFisher = function(p, DF, W, M, p.type="two", method="HYB", nsim=NULL){
   STAT = sapply(1:dim(DF)[1],function(x) stat.GFisher(p = p, df=DF[x,], w=W[x,]))
-  PVAL = sapply(1:length(STAT),function(x)p.GFisher(STAT[x], df=DF[x,], w=W[x,], M, p.type, method, nsim, seed))
+  PVAL = sapply(1:length(STAT),function(x)p.GFisher(STAT[x], df=DF[x,], w=W[x,], M, p.type, method, nsim))
   minp = min(PVAL)
-  cct = mean(tan(pi*(0.5-PVAL)))
+  # check if there are very small non-zero p values and calcuate the cauchy statistics
+  is.small<-(PVAL<1e-15)
+  CCTSTAT = PVAL
+  CCTSTAT[!is.small]<-tan((0.5-CCTSTAT[!is.small])*pi)
+  CCTSTAT[is.small]<-1/CCTSTAT[is.small]/pi
+  cct = mean(CCTSTAT)
+  #cct = mean(tan(pi*(0.5-PVAL)))
   return(list(STAT=STAT, PVAL=PVAL, minp=minp, cct=cct))
 }
